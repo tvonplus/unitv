@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ativador UniTV - Download</title>
+    <title>Download</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #111827;
+            background: #0f172a;
             color: #fff;
             display: flex;
             justify-content: center;
@@ -16,91 +19,184 @@
             height: 100vh;
         }
         .box {
-            background: #1f2937;
-            padding: 30px;
-            border-radius: 15px;
+            background: #1e293b;
+            padding: 35px 25px;
+            border-radius: 16px;
             text-align: center;
-            box-shadow: 0 0 20px rgba(0,0,0,.5);
-            max-width: 400px;
-            width: 85%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-width: 380px;
+            width: 90%;
+            border: 1px solid #334155;
         }
-        h1 { margin-top: 0; color: #3b82f6; font-size: 26px; }
-        p { color: #d1d5db; font-size: 16px; margin-bottom: 10px; }
+        p { 
+            color: #94a3b8; 
+            font-size: 16px; 
+            margin: 8px 0; 
+        }
+        .instrucao {
+            font-size: 14px;
+            color: #cbd5e1;
+            margin-bottom: 5px;
+        }
         .codigo-tv {
-            font-size: 38px;
+            font-size: 42px;
             font-weight: bold;
-            color: #f59e0b;
-            background: #111827;
-            padding: 10px;
-            border-radius: 8px;
-            letter-spacing: 4px;
-            margin: 15px 0;
-            border: 2px dashed #f59e0b;
-        }
-        input[type="number"] {
-            width: 80%;
+            color: #38bdf8;
+            background: #0f172a;
             padding: 12px;
-            font-size: 22px;
-            text-align: center;
-            border-radius: 8px;
-            border: 2px solid #374151;
-            background: #111827;
-            color: #fff;
-            margin-bottom: 15px;
+            border-radius: 10px;
+            letter-spacing: 6px;
+            margin: 15px 0 25px 0;
+            border: 2px dashed #0284c7;
         }
-        button {
-            background: #16a34a;
+        .btn-abrir {
+            background: #2563eb;
             color: white;
             border: none;
-            padding: 15px;
+            padding: 16px 20px;
             border-radius: 10px;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
-            width: 90%;
+            width: 100%;
+            transition: 0.2s;
         }
-        button:hover { background: #15803d; }
-        .erro { color: #ef4444; font-weight: bold; margin-top: 10px; display: none; }
+        .btn-abrir:hover {
+            background: #1d4ed8;
+        }
+
+        /* ESTILOS DO MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: #1e293b;
+            padding: 30px 20px;
+            border-radius: 16px;
+            width: 85%;
+            max-width: 340px;
+            text-align: center;
+            border: 1px solid #475569;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+        .modal-content h3 {
+            margin-top: 0;
+            color: #f8fafc;
+            font-size: 20px;
+        }
+        .modal-content input {
+            width: 90%;
+            padding: 14px;
+            font-size: 24px;
+            text-align: center;
+            border-radius: 8px;
+            border: 2px solid #475569;
+            background: #0f172a;
+            color: #fff;
+            margin: 15px 0;
+            outline: none;
+        }
+        .modal-content input:focus {
+            border-color: #38bdf8;
+        }
+        .modal-botoes {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .btn-ok {
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+        }
+        .btn-cancelar {
+            background: #475569;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .erro {
+            color: #f87171;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+            display: none;
+        }
     </style>
 </head>
 <body>
 
 <div class="box">
-    <h1>UniTV Ativador</h1>
-    <p>Informe o código abaixo ao suporte:</p>
-    
-    <!-- Código Aleatório do Aparelho -->
+    <p class="instrucao">Informe o código abaixo ao suporte:</p>
     <div class="codigo-tv" id="codigoAparelho">----</div>
 
-    <p>Digite a senha de liberação enviada:</p>
-    <input type="number" id="senhaLiberacao" placeholder="0000" maxlength="4">
-    
-    <button onclick="validarEBaixar()">📥 BAIXAR APK</button>
-    <div class="erro" id="msgErro">Senha incorreta! Tente novamente.</div>
+    <button class="btn-abrir" onclick="abrirModal()">🔑 Digitar Senha</button>
+</div>
+
+<!-- MODAL PARA DIGITAR A SENHA -->
+<div class="modal-overlay" id="modalSenha">
+    <div class="modal-content">
+        <h3>Informe a Senha</h3>
+        <input type="number" id="senhaLiberacao" placeholder="0000" maxlength="4">
+        
+        <div class="modal-botoes">
+            <button class="btn-ok" onclick="validarEBaixar()">OK</button>
+            <button class="btn-cancelar" onclick="fecharModal()">Sair</button>
+        </div>
+
+        <div class="erro" id="msgErro">Senha incorreta! Tente novamente.</div>
+    </div>
 </div>
 
 <script>
-    // 1. Gera um código aleatório de 4 dígitos para este aparelho/sessão
+    // Gera o código aleatório do aparelho
     const codigoAparelho = Math.floor(1000 + Math.random() * 9000);
     document.getElementById('codigoAparelho').innerText = codigoAparelho;
 
-    // Chave Secreta (NÃO MUDE A MENOS QUE MUDE NO GERAR.HTML TAMBÉM)
     const CHAVE_SECRETA = 3579;
+
+    function abrirModal() {
+        document.getElementById('modalSenha').style.display = 'flex';
+        document.getElementById('senhaLiberacao').value = '';
+        document.getElementById('msgErro').style.display = 'none';
+        // Foca automaticamente no campo de senha
+        setTimeout(() => document.getElementById('senhaLiberacao').focus(), 100);
+    }
+
+    function fecharModal() {
+        document.getElementById('modalSenha').style.display = 'none';
+    }
 
     function validarEBaixar() {
         const entrada = document.getElementById('senhaLiberacao').value;
         const msgErro = document.getElementById('msgErro');
 
-        // Cálculo da resposta esperada baseado no código do aparelho
         const respostaEsperada = (codigoAparelho * 3 + CHAVE_SECRETA) % 10000;
-        
-        // Garante 4 dígitos com zeros à esquerda se necessário
         const respostaFormatada = String(respostaEsperada).padStart(4, '0');
 
         if (entrada === respostaFormatada) {
             msgErro.style.display = 'none';
+            fecharModal();
             
-            // Cria um link temporário para iniciar o download do APK
+            // Inicia o download diretamente
             const link = document.createElement('a');
             link.href = 'Ativador%20Unitv.apk';
             link.download = 'Ativador Unitv.apk';
