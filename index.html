@@ -60,9 +60,13 @@
             cursor: pointer;
             width: 100%;
             transition: 0.2s;
+            outline: none;
         }
-        .btn-abrir:hover {
-            background: #1d4ed8;
+        
+        /* Destaque visual quando selecionado pelo controle da TV */
+        .btn-abrir:focus, .btn-ok:focus, .btn-cancelar:focus, input:focus {
+            outline: 3px solid #38bdf8 !important;
+            box-shadow: 0 0 12px #38bdf8;
         }
 
         /* ESTILOS DO MODAL */
@@ -72,7 +76,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             display: none;
             justify-content: center;
             align-items: center;
@@ -105,9 +109,6 @@
             margin: 15px 0;
             outline: none;
         }
-        .modal-content input:focus {
-            border-color: #38bdf8;
-        }
         .modal-botoes {
             display: flex;
             gap: 10px;
@@ -123,6 +124,7 @@
             font-weight: bold;
             cursor: pointer;
             flex: 1;
+            outline: none;
         }
         .btn-cancelar {
             background: #475569;
@@ -132,6 +134,7 @@
             border-radius: 8px;
             font-size: 16px;
             cursor: pointer;
+            outline: none;
         }
         .erro {
             color: #f87171;
@@ -148,7 +151,7 @@
     <p class="instrucao">Informe o código abaixo ao suporte:</p>
     <div class="codigo-tv" id="codigoAparelho">----</div>
 
-    <button class="btn-abrir" onclick="abrirModal()">🔑 Digitar Senha</button>
+    <button class="btn-abrir" id="btnAbrir" onclick="abrirModal()">🔑 Digitar Senha</button>
 </div>
 
 <!-- MODAL PARA DIGITAR A SENHA -->
@@ -158,8 +161,8 @@
         <input type="number" id="senhaLiberacao" placeholder="0000" maxlength="4">
         
         <div class="modal-botoes">
-            <button class="btn-ok" onclick="validarEBaixar()">OK</button>
-            <button class="btn-cancelar" onclick="fecharModal()">Sair</button>
+            <button class="btn-ok" id="btnOk" onclick="validarEBaixar()">OK</button>
+            <button class="btn-cancelar" id="btnCancelar" onclick="fecharModal()">Sair</button>
         </div>
 
         <div class="erro" id="msgErro">Senha incorreta! Tente novamente.</div>
@@ -173,16 +176,28 @@
 
     const CHAVE_SECRETA = 3579;
 
+    // Foca automaticamente no botão principal ao carregar a página na TV
+    window.onload = () => {
+        document.getElementById('btnAbrir').focus();
+    };
+
     function abrirModal() {
-        document.getElementById('modalSenha').style.display = 'flex';
-        document.getElementById('senhaLiberacao').value = '';
+        const modal = document.getElementById('modalSenha');
+        const inputSenha = document.getElementById('senhaLiberacao');
+        
+        modal.style.display = 'flex';
+        inputSenha.value = '';
         document.getElementById('msgErro').style.display = 'none';
-        // Foca automaticamente no campo de senha
-        setTimeout(() => document.getElementById('senhaLiberacao').focus(), 100);
+
+        // Garante o foco no input para abrir o teclado virtual da TV
+        setTimeout(() => {
+            inputSenha.focus();
+        }, 150);
     }
 
     function fecharModal() {
         document.getElementById('modalSenha').style.display = 'none';
+        document.getElementById('btnAbrir').focus();
     }
 
     function validarEBaixar() {
@@ -205,8 +220,55 @@
             document.body.removeChild(link);
         } else {
             msgErro.style.display = 'block';
+            // Devolve o foco ao campo de texto em caso de erro
+            document.getElementById('senhaLiberacao').focus();
         }
     }
+
+    // SUPORTE A NAVEGAÇÃO POR TECLAS DO CONTROLE REMOTO
+    document.addEventListener('keydown', function(event) {
+        const modalAberto = document.getElementById('modalSenha').style.display === 'flex';
+
+        if (!modalAberto) return;
+
+        const key = event.key;
+        const activeEl = document.activeElement;
+
+        // Se pressionar 'Voltar' ou 'Esc' no controle, fecha o modal
+        if (key === 'Escape' || key === 'Back' || event.keyCode === 10009 || event.keyCode === 8) {
+            fecharModal();
+            event.preventDefault();
+        }
+
+        // Navegação por setas dentro do Modal
+        if (key === 'ArrowDown') {
+            if (activeEl.id === 'senhaLiberacao') {
+                document.getElementById('btnOk').focus();
+                event.preventDefault();
+            }
+        } else if (key === 'ArrowUp') {
+            if (activeEl.id === 'btnOk' || activeEl.id === 'btnCancelar') {
+                document.getElementById('senhaLiberacao').focus();
+                event.preventDefault();
+            }
+        } else if (key === 'ArrowRight') {
+            if (activeEl.id === 'btnOk') {
+                document.getElementById('btnCancelar').focus();
+                event.preventDefault();
+            }
+        } else if (key === 'ArrowLeft') {
+            if (activeEl.id === 'btnCancelar') {
+                document.getElementById('btnOk').focus();
+                event.preventDefault();
+            }
+        } else if (key === 'Enter') {
+            // Se estiver focado no campo de texto e apertar OK/Enter no controle, tenta validar
+            if (activeEl.id === 'senhaLiberacao' && activeEl.value.length === 4) {
+                validarEBaixar();
+                event.preventDefault();
+            }
+        }
+    });
 </script>
 
 </body>
