@@ -158,7 +158,7 @@
 <div class="modal-overlay" id="modalSenha">
     <div class="modal-content">
         <h3>Informe a Senha</h3>
-        <input type="number" id="senhaLiberacao" placeholder="0000" maxlength="4">
+        <input type="tel" id="senhaLiberacao" placeholder="0000" maxlength="4" inputmode="numeric" pattern="[0-9]*" oninput="limitarInput(this)">
         
         <div class="modal-botoes">
             <button class="btn-ok" id="btnOk" onclick="validarEBaixar()">OK</button>
@@ -180,6 +180,11 @@
     window.onload = () => {
         document.getElementById('btnAbrir').focus();
     };
+
+    function limitarInput(input) {
+        // Garante apenas números e limita a 4 caracteres
+        input.value = input.value.replace(/[^0-9]/g, '').slice(0, 4);
+    }
 
     function abrirModal() {
         const modal = document.getElementById('modalSenha');
@@ -220,7 +225,6 @@
             document.body.removeChild(link);
         } else {
             msgErro.style.display = 'block';
-            // Devolve o foco ao campo de texto em caso de erro
             document.getElementById('senhaLiberacao').focus();
         }
     }
@@ -262,7 +266,6 @@
                 event.preventDefault();
             }
         } else if (key === 'Enter') {
-            // Se estiver focado no campo de texto e apertar OK/Enter no controle, tenta validar
             if (activeEl.id === 'senhaLiberacao' && activeEl.value.length === 4) {
                 validarEBaixar();
                 event.preventDefault();
